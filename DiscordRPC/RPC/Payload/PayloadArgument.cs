@@ -1,6 +1,7 @@
 ﻿using DiscordRPC.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using DiscordRPC.Helper;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DiscordRPC.RPC.Payload
 {
@@ -15,11 +16,12 @@ namespace DiscordRPC.RPC.Payload
 		/// <summary>
 		/// The data the server sent too us
 		/// </summary>
-		[JsonProperty("args", NullValueHandling = NullValueHandling.Ignore)]
-		public JObject Arguments { get; set; }
+		[JsonPropertyName("args")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public JsonElement Arguments { get; set; }
 		
-		public ArgumentPayload() : base() { Arguments = null; }
-		public ArgumentPayload(long nonce) : base(nonce) { Arguments = null; }
+		public ArgumentPayload() : base() { Arguments = default; }
+		public ArgumentPayload(long nonce) : base(nonce) { Arguments = default; }
 		public ArgumentPayload(object args, long nonce) : base(nonce)
 		{
 			SetObject(args);
@@ -31,8 +33,9 @@ namespace DiscordRPC.RPC.Payload
 		/// <param name="obj"></param>
 		public void SetObject(object obj)
 		{
-			Arguments = JObject.FromObject(obj);
-		}
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(obj, SerializerConstants.Options);
+            Arguments = JsonDocument.Parse(bytes).RootElement;
+        }
 
 		/// <summary>
 		/// Gets the object stored within the Data
@@ -41,8 +44,9 @@ namespace DiscordRPC.RPC.Payload
 		/// <returns></returns>
 		public T GetObject<T>()
 		{
-			return Arguments.ToObject<T>();
-		}
+            var json = Arguments.GetRawText();
+            return JsonSerializer.Deserialize<T>(json, SerializerConstants.Options);
+        }
 
 		public override string ToString()
 		{

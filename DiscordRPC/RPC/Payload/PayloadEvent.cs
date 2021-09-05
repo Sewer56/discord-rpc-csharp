@@ -1,6 +1,7 @@
 ﻿using DiscordRPC.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using DiscordRPC.Helper;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DiscordRPC.RPC.Payload
 {
@@ -12,25 +13,26 @@ namespace DiscordRPC.RPC.Payload
 		/// <summary>
 		/// The data the server sent too us
 		/// </summary>
-		[JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-		public JObject Data { get; set; }
+		[JsonPropertyName("data")]
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public JsonElement Data { get; set; }
 
 		/// <summary>
 		/// The type of event the server sent
 		/// </summary>
-		[JsonProperty("evt"), JsonConverter(typeof(EnumSnakeCaseConverter))]
+		[JsonPropertyName("evt")]
 		public ServerEvent? Event { get; set; }
 
         /// <summary>
         /// Creates a payload with empty data
         /// </summary>
-		public EventPayload() : base() { Data = null; }
+		public EventPayload() : base() { Data = default; }
 
         /// <summary>
         /// Creates a payload with empty data and a set nonce
         /// </summary>
         /// <param name="nonce"></param>
-		public EventPayload(long nonce) : base(nonce) { Data = null; }
+		public EventPayload(long nonce) : base(nonce) { Data = default; }
         
 		/// <summary>
 		/// Gets the object stored within the Data
@@ -39,9 +41,12 @@ namespace DiscordRPC.RPC.Payload
 		/// <returns></returns>
 		public T GetObject<T>()
 		{
-			if (Data == null) return default(T);
-            return Data.ToObject<T>();
-		}
+			if (Data.ValueKind == JsonValueKind.Undefined) 
+                return default(T);
+
+			var json = Data.GetRawText();
+            return JsonSerializer.Deserialize<T>(json, SerializerConstants.Options);
+        }
 
         /// <summary>
         /// Converts the object into a human readable string
@@ -52,6 +57,4 @@ namespace DiscordRPC.RPC.Payload
 			return "Event " + base.ToString() + ", Event: " + (Event.HasValue ? Event.ToString() : "N/A");
 		}
 	}
-	
-
 }

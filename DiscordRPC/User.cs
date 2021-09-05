@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace DiscordRPC
 {
@@ -67,31 +64,31 @@ namespace DiscordRPC
 		/// <summary>
 		/// The snowflake ID of the user. 
 		/// </summary>
-		[JsonProperty("id")]
+		[JsonPropertyName("id")]
 		public ulong ID { get; private set; }
 
 		/// <summary>
 		/// The username of the player.
 		/// </summary>
-		[JsonProperty("username")]
+		[JsonPropertyName("username")]
 		public string Username { get; private set; }
 
 		/// <summary>
 		/// The discriminator of the user.
 		/// </summary>
-		[JsonProperty("discriminator")]
+		[JsonPropertyName("discriminator")]
 		public int Discriminator { get; private set; }
         
 		/// <summary>
 		/// The avatar hash of the user. Too get a URL for the avatar, use the <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/>. This can be null if the user has no avatar. The <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/> will account for this and return the discord default.
 		/// </summary>
-		[JsonProperty("avatar")]
+		[JsonPropertyName("avatar")]
 		public string Avatar { get; private set; }
 
         /// <summary>
         /// The flags on a users account, often represented as a badge.
         /// </summary>
-        [JsonProperty("flags")]
+        [JsonPropertyName("flags")]
         public Flag Flags { get; private set; }
 
         /// <summary>
@@ -140,7 +137,7 @@ namespace DiscordRPC
         /// <summary>
         /// The premium type of the user.
         /// </summary>
-        [JsonProperty("premium_type")]
+        [JsonPropertyName("premium_type")]
         public PremiumType Premium { get; private set; }
 
         /// <summary>
