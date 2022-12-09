@@ -15,7 +15,7 @@ namespace DiscordRPC.Message
 		/// <summary>
 		/// The event that was subscribed too.
 		/// </summary>
-		public EventType Event { get; internal set; }
+		public EventType Event { get; set; }
 		
 		internal SubscribeMessage(ServerEvent evt)
 		{

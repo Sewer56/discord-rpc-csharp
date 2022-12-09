@@ -18,7 +18,7 @@ namespace DiscordRPC.Message
 		/// The <see cref="Secrets.JoinSecret" /> to connect with. 
 		/// </summary>
 		[JsonPropertyName("secret")]
-		public string Secret { get; internal set; }
+		public string Secret { get; set; }
 
 		/// <inheritdoc/>
 		public static JsonTypeInfo<JoinMessage> GetTypeInfo() => JoinMessageContext.Default.JoinMessage;

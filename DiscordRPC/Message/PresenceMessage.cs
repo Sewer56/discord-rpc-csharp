@@ -32,16 +32,16 @@ namespace DiscordRPC.Message
 		/// <summary>
 		/// The rich presence Discord has set
 		/// </summary>
-		public BaseRichPresence Presence { get; internal set; }
+		public BaseRichPresence Presence { get; set; }
 
 		/// <summary>
 		/// The name of the application Discord has set it for
 		/// </summary>
-		public string Name { get; internal set; }
+		public string Name { get; set; }
 
 		/// <summary>
 		/// The ID of the application discord has set it for
 		/// </summary>
-		public string ApplicationID { get; internal set; }
+		public string ApplicationID { get; set; }
 	}
 }

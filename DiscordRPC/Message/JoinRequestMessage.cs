@@ -18,7 +18,7 @@ namespace DiscordRPC.Message
 		/// The discord user that is requesting access.
 		/// </summary>
 		[JsonPropertyName("user")]
-		public User User { get; internal set; }
+		public User User { get; set; }
 
 		/// <inheritdoc/>
 		public static JsonTypeInfo<JoinRequestMessage> GetTypeInfo() => JoinRequestMessageContext.Default.JoinRequestMessage;

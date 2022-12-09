@@ -13,12 +13,12 @@
 		/// <summary>
 		/// The reason for the close
 		/// </summary>
-		public string Reason { get; internal set; }
+		public string Reason { get; set; }
 
 		/// <summary>
 		/// The closure code
 		/// </summary>
-		public int Code { get; internal set; }
+		public int Code { get; set; }
 
 		internal CloseMessage() { }
 		internal CloseMessage(string reason) { this.Reason = reason; }

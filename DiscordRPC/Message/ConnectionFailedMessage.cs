@@ -13,6 +13,6 @@
 		/// <summary>
 		/// The pipe we failed to connect too.
 		/// </summary>
-		public int FailedPipe { get; internal set; }
+		public int FailedPipe { get; set; }
 	}
 }

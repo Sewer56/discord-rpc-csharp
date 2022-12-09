@@ -13,6 +13,6 @@
 		/// <summary>
 		/// The pipe we ended up connecting too
 		/// </summary>
-		public int ConnectedPipe { get; internal set; }
+		public int ConnectedPipe { get; set; }
 	}
 }
