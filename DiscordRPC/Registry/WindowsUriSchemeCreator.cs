@@ -43,7 +43,7 @@ namespace DiscordRPC.Registry
             }
             else
             {
-                command = $"cmd.exe /C \"cd \"{Path.GetDirectoryName(location)}\" && \"{Path.GetFileName(location)}\"\"";
+                command = $"cmd.exe /C \"cd /D \"{Path.GetDirectoryName(location)}\" && \"{Path.GetFileName(location)}\"\"";
             }
 
             //Okay, now actually register it
