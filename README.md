@@ -1,3 +1,12 @@
+# About this Fork
+
+Personal fork of Lachee's DiscordRPC for use with Reloaded-II mods.  
+
+- Targets .NET 7.0 and above.  
+- Uses System.Text.Json & Source Generation.  (no Newtonsoft)
+- Compatible with Assembly Trimming.  
+- Not extensively tested, no compatibility guarantees.  
+
 # Discord Rich Presence
 
 [![Build status](https://ci.appveyor.com/api/projects/status/dpu2l7ta05uvm397/branch/nuget?svg=true)](https://ci.appveyor.com/project/Lachee/discord-rpc-csharp/branch/nuget)
