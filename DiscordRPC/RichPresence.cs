@@ -86,7 +86,7 @@ namespace DiscordRPC
         ///    </para>
         /// </summary>
         [JsonPropertyName("instance")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [Obsolete("This was going to be used, but was replaced by JoinSecret instead")]
         private bool Instance { get; set; }
 
@@ -675,7 +675,12 @@ namespace DiscordRPC
         /// </summary>
         [JsonPropertyName("id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string ID { get { return _partyid; } set { _partyid = value.GetNullOrString(); } }
+        public string ID 
+        { 
+            get => _partyid;
+            set => _partyid = value.GetNullOrString();
+        }
+        
         private string _partyid;
 
         /// <summary>
@@ -694,7 +699,7 @@ namespace DiscordRPC
         /// The privacy of the party
         /// </summary>
         [JsonPropertyName("privacy")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
         public PrivacySetting Privacy { get; set; }
 
         [JsonPropertyName("size")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace DiscordRPC
@@ -162,8 +163,10 @@ namespace DiscordRPC
 
         /// <summary>
         /// Creates a new User instance.
+        /// Internal usage only.
         /// </summary>
-        internal User()
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public User()
         {
             CdnEndpoint = "cdn.discordapp.com";
         }
