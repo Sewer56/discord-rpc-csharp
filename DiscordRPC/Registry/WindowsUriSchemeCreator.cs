@@ -1,5 +1,6 @@
 ﻿using DiscordRPC.Logging;
 using System;
+using System.IO;
 
 namespace DiscordRPC.Registry
 {
@@ -39,7 +40,10 @@ namespace DiscordRPC.Registry
                 string steam = GetSteamLocation();
                 if (steam != null)
                     command = string.Format("\"{0}\" steam://rungameid/{1}", steam, register.SteamAppID);
-
+            }
+            else
+            {
+                command = $"cmd.exe /C \"cd \"{Path.GetDirectoryName(location)}\" && \"{Path.GetFileName(location)}\"\"";
             }
 
             //Okay, now actually register it
