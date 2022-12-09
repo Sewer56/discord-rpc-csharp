@@ -4,7 +4,7 @@ Personal fork of Lachee's DiscordRPC for use with Reloaded-II mods.
 
 - Targets .NET 7.0 and above.  
 - Uses System.Text.Json & Source Generation.  (no Newtonsoft)
-- Compatible with Assembly Trimming.  
+- Compatible with Assembly Trimming.  (no guarantees though!)
 - Not extensively tested, no compatibility guarantees.  
 
 # Discord Rich Presence
