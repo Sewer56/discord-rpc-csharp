@@ -3,6 +3,8 @@ using DiscordRPC.Helper;
 using System.Text;
 using DiscordRPC.Exceptions;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC
 {
@@ -983,7 +985,7 @@ namespace DiscordRPC
     /// <summary>
     /// A rich presence that has been parsed from the pipe as a response.
     /// </summary>
-    internal sealed class RichPresenceResponse : BaseRichPresence
+    internal sealed class RichPresenceResponse : BaseRichPresence, IJsonSerializable<RichPresenceResponse>
     {
         /// <summary>
         /// ID of the client
@@ -997,5 +999,10 @@ namespace DiscordRPC
         [JsonPropertyName("name")]
         public string Name { get; private set; }
 
+        public static JsonTypeInfo<RichPresenceResponse> GetTypeInfo() => RichPresenceResponseContext.Default.RichPresenceResponse;
     }
+    
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+    [JsonSerializable(typeof(RichPresenceResponse))]
+    internal partial class RichPresenceResponseContext : JsonSerializerContext { }
 }

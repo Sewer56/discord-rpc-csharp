@@ -1,11 +1,13 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.Message
 {
 	/// <summary>
 	/// Called when the ipc is ready to send arguments.
 	/// </summary>
-	public class ReadyMessage : IMessage
+	public class ReadyMessage : IMessage, IJsonSerializable<ReadyMessage>
 	{
 		/// <summary>
 		/// The type of message received from discord
@@ -29,5 +31,12 @@ namespace DiscordRPC.Message
 		/// </summary>
 		[JsonPropertyName("v")]
 		public int Version { get; set; }
+
+		/// <inheritdoc/>
+		public static JsonTypeInfo<ReadyMessage> GetTypeInfo() => ReadyMessageContext.Default.ReadyMessage;
 	}
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(ReadyMessage))]
+	internal partial class ReadyMessageContext : JsonSerializerContext { }
 }

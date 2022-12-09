@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DiscordRPC.Helper;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.IO
 {
@@ -40,20 +41,23 @@ namespace DiscordRPC.IO
 			get { return GetMessage(); }
 			set { SetMessage(value); }
 		}
-		
+
 		/// <summary>
 		/// Creates a new pipe frame instance
 		/// </summary>
 		/// <param name="opcode">The opcode of the frame</param>
 		/// <param name="data">The data of the frame that will be serialized as JSON</param>
-		public PipeFrame(Opcode opcode, object data)
+		public static PipeFrame Create<T>(Opcode opcode, IJsonSerializable<T> data) where T : IJsonSerializable<T>, new()
 		{
+			var pipeFrame = new PipeFrame();
+			
 			//Set the opcode and a temp field for data
-			Opcode = opcode;
-			Data = null;
+			pipeFrame.Opcode = opcode;
+			pipeFrame.Data = null;
 
 			//Set the data
-			SetObject(data);
+			pipeFrame.SetObject(data);
+			return pipeFrame;
 		}
 
 		/// <summary>
@@ -65,7 +69,7 @@ namespace DiscordRPC.IO
 		/// Sets the data based of a string
 		/// </summary>
 		/// <param name="str"></param>
-		private void SetMessage(string str) { Data = MessageEncoding.GetBytes(str); }
+		public void SetMessage(string str) { Data = MessageEncoding.GetBytes(str); }
 
 		/// <summary>
 		/// Gets a string based of the data
@@ -77,9 +81,9 @@ namespace DiscordRPC.IO
 		/// Serializes the object into json string then encodes it into <see cref="Data"/>.
 		/// </summary>
 		/// <param name="obj"></param>
-		public void SetObject(object obj)
+		public void SetObject<T>(IJsonSerializable<T> obj) where T : IJsonSerializable<T>, new()
 		{
-			string json = JsonSerializer.Serialize(obj, SerializerConstants.Options);
+			string json = JsonSerializer.Serialize((T)obj, T.GetTypeInfo());
 			SetMessage(json);
 		}
 
@@ -88,7 +92,7 @@ namespace DiscordRPC.IO
 		/// </summary>
 		/// <param name="opcode"></param>
 		/// <param name="obj"></param>
-		public void SetObject(Opcode opcode, object obj)
+		public void SetObject<T>(Opcode opcode, IJsonSerializable<T> obj) where T : IJsonSerializable<T>, new()
 		{
 			Opcode = opcode;
 			SetObject(obj);
@@ -99,10 +103,10 @@ namespace DiscordRPC.IO
 		/// </summary>
 		/// <typeparam name="T">The type to deserialize into</typeparam>
 		/// <returns></returns>
-		public T GetObject<T>()
+		public T GetObject<T>() where T : IJsonSerializable<T>, new()
 		{
 			string json = GetMessage();
-			return JsonSerializer.Deserialize<T>(json, SerializerConstants.Options);
+			return JsonSerializer.Deserialize(json, T.GetTypeInfo());
 		}
 
 		/// <summary>

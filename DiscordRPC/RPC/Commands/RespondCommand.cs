@@ -1,9 +1,11 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using DiscordRPC.RPC.Payload;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.RPC.Commands
 {
-    internal class RespondCommand : ICommand
+    internal class RespondCommand : ICommand, IJsonSerializable<RespondCommand>
 	{
 		/// <summary>
 		/// The user ID that we are accepting / rejecting
@@ -19,10 +21,16 @@ namespace DiscordRPC.RPC.Commands
 
 		public IPayload PreparePayload(long nonce)
 		{
-			return new ArgumentPayload(this, nonce)
-			{
-				Command = Accept ? Command.SEND_ACTIVITY_JOIN_INVITE : Command.CLOSE_ACTIVITY_JOIN_REQUEST
-			};
+			var payload = ArgumentPayload.Create(this, nonce);
+			payload.Command = Accept ? Command.SEND_ACTIVITY_JOIN_INVITE : Command.CLOSE_ACTIVITY_JOIN_REQUEST;
+			return payload;
 		}
+
+		/// <inheritdoc/>
+		public static JsonTypeInfo<RespondCommand> GetTypeInfo() => RespondCommandContext.Default.RespondCommand;
 	}
+    
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+    [JsonSerializable(typeof(RespondCommand))]
+    internal partial class RespondCommandContext : JsonSerializerContext { }
 }

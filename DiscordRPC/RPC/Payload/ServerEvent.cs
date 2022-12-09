@@ -9,7 +9,11 @@ namespace DiscordRPC.RPC.Payload
     /// </summary>
     internal enum ServerEvent
 	{
-
+		/// <summary>
+		/// Default value for internal use when no value is specified.
+		/// </summary>
+		NULL = -1,
+		
 		/// <summary>
 		/// Sent when the server is ready to accept messages
 		/// </summary>

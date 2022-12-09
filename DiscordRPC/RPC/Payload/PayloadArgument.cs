@@ -2,6 +2,7 @@
 using DiscordRPC.Helper;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.RPC.Payload
 {
@@ -20,38 +21,36 @@ namespace DiscordRPC.RPC.Payload
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public JsonElement Arguments { get; set; }
 		
-		public ArgumentPayload() : base() { Arguments = default; }
-		public ArgumentPayload(long nonce) : base(nonce) { Arguments = default; }
-		public ArgumentPayload(object args, long nonce) : base(nonce)
+		public ArgumentPayload() { Arguments = default; }
+
+		public static ArgumentPayload Create<T>(T args, long nonce) where T : IJsonSerializable<T>, new()
 		{
-			SetObject(args);
+			var payload = new ArgumentPayload();
+			payload.Nonce = nonce.ToString();
+			payload.SetObject<T>(args);
+			return payload;
 		}
 
 		/// <summary>
 		/// Sets the obejct stored within the data.
 		/// </summary>
 		/// <param name="obj"></param>
-		public void SetObject(object obj)
+		public void SetObject<T>(T obj) where T : IJsonSerializable<T>, new()
 		{
-            var bytes = JsonSerializer.SerializeToUtf8Bytes(obj, SerializerConstants.Options);
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(obj, T.GetTypeInfo());
             Arguments = JsonDocument.Parse(bytes).RootElement;
-        }
-
-		/// <summary>
-		/// Gets the object stored within the Data
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public T GetObject<T>()
-		{
-            var json = Arguments.GetRawText();
-            return JsonSerializer.Deserialize<T>(json, SerializerConstants.Options);
         }
 
 		public override string ToString()
 		{
 			return "Argument " + base.ToString();
 		}
+
+		public override string Serialize() => JsonSerializer.Serialize(this, ArgumentPayloadContext.Default.ArgumentPayload);
 	}
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(ArgumentPayload))]
+	internal partial class ArgumentPayloadContext : JsonSerializerContext { }
 }
 

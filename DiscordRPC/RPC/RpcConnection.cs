@@ -464,7 +464,7 @@ namespace DiscordRPC.RPC
 			Logger.Info("Handling Response. Cmd: {0}, Event: {1}", response.Command, response.Event);
 
 			//Check if it is an error
-			if (response.Event.HasValue && response.Event.Value == ServerEvent.ERROR)
+			if (response.Event == ServerEvent.ERROR)
 			{
 				//We have an error
 				Logger.Error("Error received from the RPC");
@@ -481,7 +481,7 @@ namespace DiscordRPC.RPC
 			//Check if its a handshake
 			if (State == RpcState.Connecting)
 			{
-				if (response.Command == Command.DISPATCH && response.Event.HasValue && response.Event.Value == ServerEvent.READY)
+				if (response.Command == Command.DISPATCH && response.Event == ServerEvent.READY)
 				{
 					Logger.Info("Connection established with the RPC");
 					SetConnectionState(RpcState.Connected);
@@ -527,7 +527,7 @@ namespace DiscordRPC.RPC
 					case Command.SUBSCRIBE:
 
                         // Go through the data, looking for the evt property, casting it to a server event
-                        var evt = response.GetObject<EventPayload>().Event.Value;
+                        var evt = response.GetObject<EventPayload>().Event;
 
 						//Enqueue the appropriate message.
 						if (response.Command == Command.SUBSCRIBE)
@@ -559,9 +559,9 @@ namespace DiscordRPC.RPC
 		private void ProcessDispatch(EventPayload response)
 		{
 			if (response.Command != Command.DISPATCH) return;
-			if (!response.Event.HasValue) return;
+			if (response.Event == ServerEvent.NULL) return;
 
-			switch(response.Event.Value)
+			switch(response.Event)
 			{
 				//We are to join the server
 				case ServerEvent.ACTIVITY_SPECTATE:
@@ -581,7 +581,7 @@ namespace DiscordRPC.RPC
 
 				//Unkown dispatch event received. We should just ignore it.
 				default:
-					Logger.Warning("Ignoring {0}", response.Event.Value);
+					Logger.Warning("Ignoring {0}", response.Event);
 					break;
 			}
 		}
@@ -654,7 +654,8 @@ namespace DiscordRPC.RPC
 					else
 					{
 						//Prepare the frame
-						frame.SetObject(Opcode.Frame, payload);
+						frame.Opcode = Opcode.Frame;
+						frame.SetMessage(payload.Serialize());
 
 						//Write it and if it wrote perfectly fine, we will dequeue it
 						Logger.Trace("Sending payload: " + payload.Command);
@@ -699,7 +700,7 @@ namespace DiscordRPC.RPC
 
 			//Send it off to the server
 			Logger.Trace("Sending Handshake...");				
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Handshake, new Handshake() { Version = VERSION, ClientID = applicationID })))
+			if (!namedPipe.WriteFrame(PipeFrame.Create(Opcode.Handshake, new Handshake() { Version = VERSION, ClientID = applicationID })))
 			{
 				Logger.Error("Failed to write a handshake.");
 				return;
@@ -724,7 +725,7 @@ namespace DiscordRPC.RPC
 			}
 			
 			//Send the handwave
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Close, new Handshake() { Version = VERSION, ClientID = applicationID })))
+			if (!namedPipe.WriteFrame(PipeFrame.Create(Opcode.Close, new Handshake() { Version = VERSION, ClientID = applicationID })))
 			{
 				Logger.Error("failed to write a handwave.");
 				return;
