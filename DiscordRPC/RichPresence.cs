@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using DiscordRPC.Helper;
 using System.Text;
 using DiscordRPC.Exceptions;
@@ -704,9 +705,14 @@ namespace DiscordRPC
         [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
         public PrivacySetting Privacy { get; set; }
 
+        /// <summary>
+        /// Public only for source generation.
+        /// For internal use only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonPropertyName("size")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        private int[] _size
+        public int[] _size
         {
             get
             {
