@@ -1,6 +1,8 @@
 ﻿using DiscordRPC.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using DiscordRPC.Helper;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.RPC.Payload
 {
@@ -15,39 +17,40 @@ namespace DiscordRPC.RPC.Payload
 		/// <summary>
 		/// The data the server sent too us
 		/// </summary>
-		[JsonProperty("args", NullValueHandling = NullValueHandling.Ignore)]
-		public JObject Arguments { get; set; }
+		[JsonPropertyName("args")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public JsonElement Arguments { get; set; }
 		
-		public ArgumentPayload() : base() { Arguments = null; }
-		public ArgumentPayload(long nonce) : base(nonce) { Arguments = null; }
-		public ArgumentPayload(object args, long nonce) : base(nonce)
+		public ArgumentPayload() { Arguments = default; }
+
+		public static ArgumentPayload Create<T>(T args, long nonce) where T : IJsonSerializable<T>, new()
 		{
-			SetObject(args);
+			var payload = new ArgumentPayload();
+			payload.Nonce = nonce.ToString();
+			payload.SetObject<T>(args);
+			return payload;
 		}
 
 		/// <summary>
 		/// Sets the obejct stored within the data.
 		/// </summary>
 		/// <param name="obj"></param>
-		public void SetObject(object obj)
+		public void SetObject<T>(T obj) where T : IJsonSerializable<T>, new()
 		{
-			Arguments = JObject.FromObject(obj);
-		}
-
-		/// <summary>
-		/// Gets the object stored within the Data
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public T GetObject<T>()
-		{
-			return Arguments.ToObject<T>();
-		}
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(obj, T.GetTypeInfo());
+            Arguments = JsonDocument.Parse(bytes).RootElement;
+        }
 
 		public override string ToString()
 		{
 			return "Argument " + base.ToString();
 		}
+
+		public override string Serialize() => JsonSerializer.Serialize(this, ArgumentPayloadContext.Default.ArgumentPayload);
 	}
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(ArgumentPayload))]
+	internal partial class ArgumentPayloadContext : JsonSerializerContext { }
 }
 

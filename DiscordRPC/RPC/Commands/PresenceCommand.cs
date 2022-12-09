@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using DiscordRPC.RPC.Payload;
-using Newtonsoft.Json;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.RPC.Commands
 {
-	internal class PresenceCommand : ICommand
+	internal class PresenceCommand : ICommand, IJsonSerializable<PresenceCommand>
 	{
 		/// <summary>
 		/// The process ID
 		/// </summary>
-		[JsonProperty("pid")]
+		[JsonPropertyName("pid")]
 		public int PID { get; set; }
 
 		/// <summary>
 		/// The rich presence to be set. Can be null.
 		/// </summary>
-		[JsonProperty("activity")]
+		[JsonPropertyName("activity")]
 		public RichPresence Presence { get; set; }
 
 		public IPayload PreparePayload(long nonce)
 		{
-			return new ArgumentPayload(this, nonce)
-			{
-				Command = Command.SetActivity
-			};
+			var payload = ArgumentPayload.Create(this, nonce);
+			payload.Command = Command.SET_ACTIVITY;
+			return payload;
 		}
+
+		/// <inheritdoc/>
+		public static JsonTypeInfo<PresenceCommand> GetTypeInfo() => PresenceCommandContext.Default.PresenceCommand;
 	}
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(PresenceCommand))]
+	internal partial class PresenceCommandContext : JsonSerializerContext { }
 }

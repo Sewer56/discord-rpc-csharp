@@ -1,30 +1,40 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.Message
 {
 	/// <summary>
 	/// Created when a error occurs within the ipc and it is sent to the client.
 	/// </summary>
-	public class ErrorMessage : IMessage
+	public class ErrorMessage : IMessage, IJsonSerializable<ErrorMessage>
 	{
 		/// <summary>
 		/// The type of message received from discord
 		/// </summary>
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public override MessageType Type { get { return MessageType.Error; } }
 
 		/// <summary>
 		/// The Discord error code.
 		/// </summary>
-		[JsonProperty("code")]
+		[JsonPropertyName("code")]
 		public ErrorCode Code { get; internal set; }
 
 		/// <summary>
 		/// The message associated with the error code.
 		/// </summary>
-		[JsonProperty("message")]
+		[JsonPropertyName("message")]
 		public string Message { get; internal set; }
 
+		/// <inheritdoc/>
+		public static JsonTypeInfo<ErrorMessage> GetTypeInfo() => ErrorMessageContext.Default.ErrorMessage;
 	}
+	
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(ErrorMessage))]
+	internal partial class ErrorMessageContext : JsonSerializerContext { }
 
 	/// <summary>
 	/// The error message received by discord. See https://discordapp.com/developers/docs/topics/rpc#rpc-server-payloads-rpc-errors for documentation
