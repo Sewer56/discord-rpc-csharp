@@ -1,8 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using DiscordRPC.Trimming;
 
 namespace DiscordRPC.IO
 {
-	internal class Handshake
+	internal class Handshake : IJsonSerializable<Handshake>
 	{       
 		/// <summary>
 		/// Version of the IPC API we are using
@@ -15,5 +19,11 @@ namespace DiscordRPC.IO
 		/// </summary>
 		[JsonPropertyName("client_id")]
 		public string ClientID { get; set; }
+
+		public static JsonTypeInfo<Handshake> GetTypeInfo() => HandshakeContext.Default.Handshake;
 	}
+	
+	[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
+	[JsonSerializable(typeof(Handshake))]
+	internal partial class HandshakeContext : JsonSerializerContext { }
 }

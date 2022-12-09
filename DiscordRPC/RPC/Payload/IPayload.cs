@@ -12,6 +12,7 @@ namespace DiscordRPC.RPC.Payload
 		/// The type of payload
 		/// </summary>
 		[JsonPropertyName("cmd")]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public Command Command { get; set; }
 
 		/// <summary>
@@ -30,6 +31,8 @@ namespace DiscordRPC.RPC.Payload
 		{
 			return "Payload || Command: " + Command.ToString() + ", Nonce: " + (Nonce != null ? Nonce.ToString() : "NULL");
 		}
+
+		public abstract string Serialize();
 	}
 }
 
